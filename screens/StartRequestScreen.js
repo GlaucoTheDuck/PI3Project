@@ -17,11 +17,33 @@ import { useNavigation } from '@react-navigation/native';
 export default function HomeScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [solicitations, setSolicitations] = useState([]);//Array de solicitações: {titulos, descrições e no futuro, imagens}.
   
   const navigation = useNavigation();
 
   const handlePressImage = () => {
     Alert.alert('Imagem clicada!');
+  };
+
+  const handleSubmit = () => {
+    if (!title || !description) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+    
+    const newSolicitation = {//modificar para adicionar fotos
+      id: Date.now().toString(),
+      title,
+      description,
+      date: new Date().toISOString(),
+    };
+    
+    setSolicitations(prev => [...prev, newSolicitation]);
+    
+    setTitle('');
+    setDescription('');
+    
+    navigation.navigate('ListSolicitation', { solicitations: [...solicitations, newSolicitation] });
   };
 
   return (
@@ -53,7 +75,7 @@ export default function HomeScreen() {
           <View style={styles.buttonContainer}>
             <Button
               title="Enviar"
-              onPress={() => navigation.navigate('ListSolicitation')}
+              onPress={handleSubmit}
             />
           </View>
         </ScrollView>
