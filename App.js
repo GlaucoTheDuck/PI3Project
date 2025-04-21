@@ -5,13 +5,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import RequestListScreen from './screens/RequestListScreen';
 import StartRequestScreen from './screens/StartRequestScreen'
 import SolicitationDetail from './screens/SolicitationDetail';
+import LoginScreen from './screens/LoginScreen';
+import MapScreen from './screens/MapScreen';
+
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="RegistObstrution">
+      <Stack.Navigator initialRouteName="LoginScreen">
         <Stack.Screen 
           name="ListSolicitation" 
           component={RequestListScreen} 
@@ -24,10 +27,20 @@ export default function App() {
             title: route.params.solicitation.title || 'Detalhes',
           })} 
         />
-        <Stack.Screen // Mantenha o Home por último
+        <Stack.Screen 
           name="RegistObstrution" 
           component={StartRequestScreen} 
           options={{ title: 'Registro de Obstrução' }} 
+        />
+        <Stack.Screen 
+          name="MapScreen" 
+          component={MapScreen} 
+          options={{ title: 'Mapa' }} 
+        />
+        <Stack.Screen // Mantenha o Home por último
+          name="LoginScreen" 
+          component={LoginScreen} 
+          options={{ title: 'Tela de Login' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
