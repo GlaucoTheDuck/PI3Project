@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,13 +13,14 @@ import {
   Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { AppContext } from '../components/UserContext';
 
 export default function HomeScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [solicitations, setSolicitations] = useState([]);//Array de solicitações: {titulos, descrições e no futuro, imagens}.
-  
   const navigation = useNavigation();
+  const { solicitations, setSolicitations } = useContext(AppContext);
+  const placeholderImage = Image.resolveAssetSource(require('../assets/select-image-icon.png')).uri;//temporário
 
   const handlePressImage = () => {
     Alert.alert('Imagem clicada!');
@@ -30,34 +31,37 @@ export default function HomeScreen() {
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
       return;
     }
-    
-    const newSolicitation = {//modificar para adicionar fotos
+  
+    const newSolicitation = {
       id: Date.now().toString(),
       title,
       description,
       date: new Date().toISOString(),
+      imageUri: placeholderImage,//temporário
     };
-    
-    setSolicitations(prev => [...prev, newSolicitation]);
-    
+  
+    const updatedList = [...solicitations, newSolicitation];
+    setSolicitations(updatedList);
+  
     setTitle('');
     setDescription('');
-    
-    navigation.navigate('ListSolicitation', { solicitations: [...solicitations, newSolicitation] });
+  
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: 'MapScreen' },
+        { name: 'ListSolicitation' },
+      ],
+    });
   };
+  
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoiding}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoiding}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <TouchableOpacity onPress={handlePressImage} style={styles.imageContainer}>
-            <Image
-              source={require('../assets/select-image-icon.png')}
-              style={styles.image}
-            />
+            <Image source={require('../assets/select-image-icon.png')} style={styles.image} />
           </TouchableOpacity>
           <TextInput
             style={styles.titleInput}
@@ -73,16 +77,14 @@ export default function HomeScreen() {
             onChangeText={setDescription}
           />
           <View style={styles.buttonContainer}>
-            <Button
-              title="Enviar"
-              onPress={handleSubmit}
-            />
+            <Button title="Enviar" onPress={handleSubmit} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   safeArea: {

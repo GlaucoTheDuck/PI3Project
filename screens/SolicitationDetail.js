@@ -1,57 +1,99 @@
-import React from 'react';
-import { View, Image, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { AppContext } from '../components/UserContext';
 
 export default function SolicitationDetail({ route }) {
   const { solicitation } = route.params;
+  const { user } = useContext(AppContext);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image //imagem temporária
-          source={require('../assets/select-image-icon.png')} 
-          style={styles.image} 
-          resizeMode='contain'/>
-      </View>
-      
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image
+        source={{ uri: solicitation.imageUri }}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
       <View style={styles.content}>
         <Text style={styles.title}>{solicitation.title}</Text>
-        <Text style={styles.date}>{solicitation.date}</Text>
+        <Text style={styles.label}>Descrição:</Text>
         <Text style={styles.description}>{solicitation.description}</Text>
+        <Text style={styles.label}>Data de Criação:</Text>
+        <Text style={styles.date}>{new Date(solicitation.date).toLocaleString()}</Text>
       </View>
+
+      {/* So mostra os botões se for admin */}
+      {user.isAdm && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.accept]/*Não faz nada ainda*/}>
+            <Text style={styles.buttonText}>Aceitar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.deny]/*Não faz nada ainda*/}>
+            <Text style={styles.buttonText}>Recusar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    padding: 16,
     backgroundColor: '#fff',
-  },
-  imageContainer: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    flexGrow: 1, 
   },
   image: {
     width: '100%',
-    aspectRatio: 1, 
+    height: 220,
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: '#eee',
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 8,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 12,
+    textAlign: 'center',
   },
-  date: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 10,
   },
   description: {
     fontSize: 16,
-    lineHeight: 24,
+    marginTop: 4,
+  },
+  date: {
+    fontSize: 14,
+    color: '#555',
+    marginTop: 4,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20, 
+    paddingHorizontal: 16,
+  },
+  button: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    alignItems: 'center',
+  },
+  accept: {
+    backgroundColor: 'green',
+  },
+  deny: {
+    backgroundColor: 'red',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

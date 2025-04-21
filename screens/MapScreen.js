@@ -46,7 +46,7 @@ export default function SolicitationDetail() {
             <Text>🚫</Text>
           </TouchableOpacity>
   
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RegistObstrution')}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ListSolicitation')}>
             <Text>📸</Text>
           </TouchableOpacity>
         </View>

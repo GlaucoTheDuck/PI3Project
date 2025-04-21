@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, FlatList, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { AppContext } from '../components/UserContext';
 
-export default function HomeScreen({ route, navigation }) {
-  const { solicitations } = route.params || { solicitations: [] };
+export default function HomeScreen({ navigation }) {
+  const { solicitations } = useContext(AppContext);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => navigation.navigate('SolicitationDetail', { solicitation: item })}
     >
@@ -30,6 +30,12 @@ export default function HomeScreen({ route, navigation }) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
       />
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => navigation.navigate('RegistObstrution')}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -72,5 +78,22 @@ const styles = StyleSheet.create({
   itemDescription: {
     fontSize: 14,
     color: '#666',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: 'green',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  fabText: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: 'bold',
   },
 });
