@@ -1,77 +1,93 @@
-import { WebView } from 'react-native-webview'; // Não use o import do react-native
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
-const htmlContent = `
-<!DOCTYPE html>
-<html>
-  <body>
-    <div id="map" style="height:100vh"></div>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-      var map = L.map('map').setView([-15.7942, -47.8825], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-      
-      // Adicione marcadores
-      L.marker([-15.7942, -47.8825])
-       .addTo(map)
-       .bindPopup("Táxi 01");
-    </script>
-  </body>
-</html>
-`;
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import MapView, { Marker } from "react-native-maps";
+import React, { useRef, useEffect } from 'react';
 
 export default function SolicitationDetail() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();  
 
-    return (
-      <View style={styles.container}>
-        <WebView
-          originWhitelist={['*']}
-          source={{ html: htmlContent }}
-          style={styles.map}
+  const mapRef = useRef(null);
+
+  const dfBoundaries = {
+    northEast:{latitude: -15.502233154575839, longitude: -47.30864855258083},
+    southWest:{latitude: -16.049527992387187, longitude: -48.28690285799649}
+  };
+
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.setMapBoundaries(
+        dfBoundaries.northEast,
+        dfBoundaries.southWest
+      );
+    }
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <MapView    
+        ref={mapRef}
+        style={StyleSheet.map}
+        initialRegion={{
+          latitude: -15.795987917284686,
+          longitude: -47.887085271739814,
+          latitudeDelta: 5,
+          longitudeDelta: 5,
+        }}
+        provider="google"
+      >
+        <Marker  
+          coordinate={{
+            latitude: -15.822369143735692,
+            longitude: -47.83437727210486,
+          }}
+          pinColor="red"
         />
-  
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Text>🚫</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button}>
-            <Text>🚫</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button}>
-            <Text>🚫</Text>
-          </TouchableOpacity>
-  
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ListSolicitation')}>
-            <Text>📸</Text>
-          </TouchableOpacity>
-        </View>
+      </MapView>
+
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text>🚫</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Text>🚫</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Text>🚫</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("ListSolicitation")}
+        >
+          <Text>📸</Text>
+        </TouchableOpacity>
       </View>
-    );
-  }
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    map: {
-      flex: 1,
-    },
-    buttonsContainer: {
-      flex: 0.1,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      backgroundColor: '#f0f0f0',
-      paddingVertical: 10,
-    },
-    button: {
-      padding: 15,
-      borderRadius: 30,
-      backgroundColor: 'white',
-    },
-  });
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+    width: "100%", 
+    height: "100%" 
+  },
+  buttonsContainer: {
+    flex: 0.1,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    paddingVertical: 10,
+  },
+  button: {
+    padding: 15,
+    borderRadius: 30,
+    backgroundColor: "white",
+  },
+});
