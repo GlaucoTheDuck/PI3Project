@@ -1,16 +1,16 @@
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from "react";
 
 export default function SolicitationDetail() {
-  const navigation = useNavigation();  
+  const navigation = useNavigation();
 
   const mapRef = useRef(null);
 
   const dfBoundaries = {
-    northEast:{latitude: -15.502233154575839, longitude: -47.30864855258083},
-    southWest:{latitude: -16.049527992387187, longitude: -48.28690285799649}
+    northEast: { latitude: -15.502233154575839, longitude: -47.30864855258083 },
+    southWest: { latitude: -16.049527992387187, longitude: -48.28690285799649 },
   };
 
   useEffect(() => {
@@ -24,25 +24,27 @@ export default function SolicitationDetail() {
 
   return (
     <View style={styles.container}>
-      <MapView    
-        ref={mapRef}
-        style={StyleSheet.map}
-        initialRegion={{
-          latitude: -15.795987917284686,
-          longitude: -47.887085271739814,
-          latitudeDelta: 5,
-          longitudeDelta: 5,
-        }}
-        provider="google"
-      >
-        <Marker  
-          coordinate={{
-            latitude: -15.822369143735692,
-            longitude: -47.83437727210486,
+      <View style={{ flex: 0.9 }}>
+        <MapView
+          ref={mapRef}
+          style={StyleSheet.absoluteFill}
+          initialRegion={{
+            latitude: -15.795987917284686,
+            longitude: -47.887085271739814,
+            latitudeDelta: 5,
+            longitudeDelta: 5,
           }}
-          pinColor="red"
-        />
-      </MapView>
+          provider="google"
+        >
+          <Marker
+            coordinate={{
+              latitude: -15.822369143735692,
+              longitude: -47.83437727210486,
+            }}
+            pinColor="red"
+          />
+        </MapView>
+      </View>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button}>
@@ -71,11 +73,6 @@ export default function SolicitationDetail() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    flex: 1,
-    width: "100%", 
-    height: "100%" 
   },
   buttonsContainer: {
     flex: 0.1,
