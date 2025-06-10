@@ -15,37 +15,50 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../components/UserContext';
 
-export default function HomeScreen() {
+export default function StartRequestScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const navigation = useNavigation();
+  const [imageUri, setImageUri] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [compassHeading, setCompassHeading] = useState(null);
   const { solicitations, setSolicitations } = useContext(AppContext);
-  const placeholderImage = Image.resolveAssetSource(require('../assets/select-image-icon.png')).uri;//temporário
+  const navigation = useNavigation();
 
   const handlePressImage = () => {
-    Alert.alert('Imagem clicada!');
+    navigation.navigate('CameraScreen', { onPhotoTaken: handlePhotoTaken });
+  };
+
+  const handlePhotoTaken = (photoUri, location, compassHeading) => {
+    setImageUri(photoUri);
+    setLocation(location);
+    setCompassHeading(compassHeading);
   };
 
   const handleSubmit = () => {
-    if (!title || !description) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos');
+    if (!title || !description || !imageUri) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos e tire uma foto');
       return;
     }
-  
+
     const newSolicitation = {
       id: Date.now().toString(),
       title,
       description,
       date: new Date().toISOString(),
-      imageUri: placeholderImage,//temporário
+      imageUri, 
+      location, 
+      compassHeading, 
     };
-  
+
     const updatedList = [...solicitations, newSolicitation];
     setSolicitations(updatedList);
-  
+
     setTitle('');
     setDescription('');
-  
+    setImageUri(null); 
+    setLocation(null); 
+    setCompassHeading(null); 
+
     navigation.reset({
       index: 0,
       routes: [
@@ -54,14 +67,17 @@ export default function HomeScreen() {
       ],
     });
   };
-  
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardAvoiding}>
+      <KeyboardAvoidingView style={styles.keyboardAvoiding}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <TouchableOpacity onPress={handlePressImage} style={styles.imageContainer}>
-            <Image source={require('../assets/select-image-icon.png')} style={styles.image} />
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.image} />
+            ) : (
+              <Image source={require('../assets/select-image-icon.png')} style={styles.image} />
+            )}
           </TouchableOpacity>
           <TextInput
             style={styles.titleInput}
@@ -84,7 +100,6 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   safeArea: {

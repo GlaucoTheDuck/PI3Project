@@ -6,21 +6,24 @@ export default function HomeScreen({ navigation }) {
   const { solicitations } = useContext(AppContext);
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.itemContainer}
-      onPress={() => navigation.navigate('SolicitationDetail', { solicitation: item })}
-    >
-      {item.imageUri && (
-        <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
-      )}
-      <View style={styles.textContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDescription} numberOfLines={2}>
-          {item.description}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  <TouchableOpacity
+    style={styles.itemContainer}
+    onPress={() => navigation.navigate('SolicitationDetail', { solicitation: item })}
+  >
+    {item.imageUri ? (
+      <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
+    ) : (
+      <Image source={require('../assets/select-image-icon.png')} style={styles.itemImage} />
+    )}
+    <View style={styles.textContainer}>
+      <Text style={styles.itemTitle}>{item.title}</Text>
+      <Text style={styles.itemDescription} numberOfLines={2}>
+        {item.description}
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
+
 
   return (
     <View style={styles.container}>

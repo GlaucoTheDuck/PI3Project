@@ -10,6 +10,7 @@ import StartRequestScreen from './screens/StartRequestScreen';
 import SolicitationDetail from './screens/SolicitationDetail';
 import LoginScreen from './screens/LoginScreen';
 import MapScreen from './screens/MapScreen';
+import CameraScreen from './screens/CameraScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
           <Stack.Screen name="RegistObstrution" component={StartRequestScreen} options={{ title: 'Registro de Obstrução' }} />
           <Stack.Screen name="MapScreen" component={MapScreen} options={{ title: 'Mapa' }} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ title: 'Tela de Login' }} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} options={{ title: 'Camera' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </AppProvider>
