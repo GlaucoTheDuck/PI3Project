@@ -1,34 +1,47 @@
 import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { AppContext } from '../components/UserContext';
+import { uploadImage } from '../src/api/pin'
 
 export default function SolicitationDetail({ route }) {
-  const { solicitation } = route.params;
+  const { pin } = route.params;
   const { user } = useContext(AppContext);
+  
+  // Debug: verificar dados do pin
+  console.log('Pin data:', pin);
+  console.log('ImageUri:', pin.imageUri);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image
-        source={{ uri: solicitation.imageUri }}
-        style={styles.image}
-        resizeMode="contain"
-      />
-
+    <ScrollView style={styles.container}>
+      {pin.imageUri && (
+        <Image source={{ uri: pin.imageUri }} style={styles.image} />
+      )}
+      
       <View style={styles.content}>
-        <Text style={styles.title}>{solicitation.title}</Text>
+        <Text style={styles.title}>{pin.title}</Text>
+        
         <Text style={styles.label}>Descrição:</Text>
-        <Text style={styles.description}>{solicitation.description}</Text>
-        <Text style={styles.label}>Data de Criação:</Text>
-        <Text style={styles.date}>{new Date(solicitation.date).toLocaleString()}</Text>
+        <Text style={styles.description}>{pin.desc}</Text>
+        
+        <Text style={styles.label}>Data:</Text>
+        <Text style={styles.date}>
+          {new Date(pin.date).toLocaleDateString()}
+        </Text>
+        
+        <Text style={styles.label}>Localização:</Text>
+        <Text style={styles.description}>
+          Lat: {pin.lati.toFixed(6)}, Long: {pin.long.toFixed(6)}
+        </Text>
+        
+        <Text style={styles.label}>Direção da Bússola:</Text>
+        <Text style={styles.description}>{pin.compassHeading}°</Text>
       </View>
 
-      {/* So mostra os botões se for admin */}
+      {/* Só mostra os botões se for admin */}
       {user.isAdm && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.accept]/*Não faz nada ainda*/}>
-            <Text style={styles.buttonText}>Aceitar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.deny]/*Não faz nada ainda*/}>
+          <TouchableOpacity style={[styles.button, styles.deny]} onPress={() => {uploadImage(pin.id);}
+          }>
             <Text style={styles.buttonText}>Recusar</Text>
           </TouchableOpacity>
         </View>
@@ -41,7 +54,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#fff',
-    flexGrow: 1, 
+    flexGrow: 1,
   },
   image: {
     width: '100%',
@@ -76,7 +89,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20, 
+    marginTop: 20,
     paddingHorizontal: 16,
   },
   button: {

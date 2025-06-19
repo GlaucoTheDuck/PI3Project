@@ -3,34 +3,36 @@ import { View, FlatList, TouchableOpacity, Image, Text, StyleSheet } from 'react
 import { AppContext } from '../components/UserContext';
 
 export default function HomeScreen({ navigation }) {
-  const { solicitations } = useContext(AppContext);
+  const { pins } = useContext(AppContext);
 
   const renderItem = ({ item }) => (
-  <TouchableOpacity
-    style={styles.itemContainer}
-    onPress={() => navigation.navigate('SolicitationDetail', { solicitation: item })}
-  >
-    {item.imageUri ? (
-      <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
-    ) : (
-      <Image source={require('../assets/select-image-icon.png')} style={styles.itemImage} />
-    )}
-    <View style={styles.textContainer}>
-      <Text style={styles.itemTitle}>{item.title}</Text>
-      <Text style={styles.itemDescription} numberOfLines={2}>
-        {item.description}
-      </Text>
-    </View>
-  </TouchableOpacity>
-);
-
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => navigation.navigate('SolicitationDetail', { pin: item })}
+    >
+      {item.imageUri ? (
+        <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
+      ) : (
+        <Image source={require('../assets/select-image-icon.png')} style={styles.itemImage} />
+      )}
+      <View style={styles.textContainer}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemDescription} numberOfLines={2}>
+          {item.description || 'Sem descrição'}
+        </Text>
+        <Text style={styles.locationText}>
+          Lat: {item.lati?.toFixed(4)}, Long: {item.long?.toFixed(4)}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={solicitations}
+        data={pins}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
         contentContainerStyle={styles.listContent}
       />
       <TouchableOpacity
@@ -81,6 +83,11 @@ const styles = StyleSheet.create({
   itemDescription: {
     fontSize: 14,
     color: '#666',
+    marginBottom: 3,
+  },
+  locationText: {
+    fontSize: 12,
+    color: '#999',
   },
   fab: {
     position: 'absolute',

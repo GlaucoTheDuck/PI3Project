@@ -1,43 +1,21 @@
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
-import React, { useRef, useState, useEffect } from "react";
-import { getPins } from "../src/api/pin"
+import React, { useRef, useEffect, useContext } from "react";
+import { AppContext } from '../components/UserContext';
 
 export default function SolicitationDetail() {
-  
   const navigation = useNavigation();
-
   const mapRef = useRef(null);
-  
-  const [markers, setMarkers] = useState([]);
+  const { pins } = useContext(AppContext);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadMarkers() {
-      try {
-        const pins = await getPins();
-        if (!isMounted) return;
-
-        // Converte sua resposta no formato que o Map espera
-        const markersList = pins.map(pin => ({
-          title: pin.title,                 // ajuste se for outro campo
-          latitude: pin.lati,
-          longitude: pin.long,
-        }));
-
-        setMarkers(markersList);
-      } catch (err) {
-        console.error('Erro ao buscar pins:', err);
-      }
-    }
-
-    loadMarkers();
-
-    const intervalId = setInterval(loadMarkers, 5000);
-    return () => { isMounted = false; clearInterval(intervalId); };
-}, []);
+  // Converte pins para o formato que o Map espera
+  const markers = pins.map((pin, idx) => ({
+    id: pin.id || idx,
+    title: pin.title,
+    latitude: pin.lati,
+    longitude: pin.long,
+  }));
 
   const dfBoundaries = {
     northEast: { latitude: -15.502233154575839, longitude: -47.30864855258083 },
@@ -60,7 +38,6 @@ export default function SolicitationDetail() {
           ref={mapRef}
           style={StyleSheet.absoluteFill}
           initialRegion={{
-            
             latitude: -15.795987917284686,
             longitude: -47.887085271739814,
             latitudeDelta: 5,
@@ -68,33 +45,29 @@ export default function SolicitationDetail() {
           }}
           provider="google"
         >
-          {markers.map((m, idx) => (
+          {markers.map((m) => (
             <Marker
-              key={m.id ?? idx}
+              key={m.id}
               coordinate={{
                 latitude: m.latitude,
                 longitude: m.longitude
               }}
               pinColor={'red'}
-              //title={m.title}
+              title={m.title}
             />
           ))}
         </MapView>
       </View>
-
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button}>
           <Text>🚫</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.button}>
           <Text>🚫</Text>
         </TouchableOpacity>
-
         <TouchableOpacity style={styles.button}>
           <Text>🚫</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("ListSolicitation")}

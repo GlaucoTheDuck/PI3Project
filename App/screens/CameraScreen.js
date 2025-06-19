@@ -85,26 +85,15 @@ export default function CameraScreen({ route, navigation }) {
       facing={"back"}
     >
       <View style={styles.shutterContainer}>
-        <Pressable onPress={takePicture}>
-          {({ pressed }) => (
-            <View
-              style={[
-                styles.shutterBtn,
-                {
-                  opacity: pressed ? 0.5 : 1,
-                },
-              ]}
-            >
-              <View
-                style={[
-                  styles.shutterBtnInner,
-                  {
-                    backgroundColor: "white",
-                  },
-                ]}
-              />
-            </View>
-          )}
+        <Pressable
+          onPress={takePicture}
+          disabled={!location}
+          style={({ pressed }) => [
+            styles.shutterBtn,
+            { opacity: pressed ? 0.5 : location ? 1 : 0.3 },
+          ]}
+        >
+          <View style={styles.shutterBtnInner} />
         </Pressable>
       </View>
     </CameraView>

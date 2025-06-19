@@ -37,24 +37,39 @@ export async function getPins() {
 
 // Criar novo pin
 // Função para enviar imagem com pin
-export async function createPin(imageUri, pinData) {
+export async function createPin(pinData) {
   try {
     const formData = new FormData();
     
     // Adiciona a imagem
     formData.append('file', {
-      uri: imageUri,
+      uri: pinData.imageUri,
       type: 'image/jpeg', // ou detectar automaticamente
       name: 'pin-image.jpg',
     });
-    
+
+    const dateOnly = new Date(pinData.date).toISOString().split('T')[0];
+
     // Adiciona dados do pin
-    formData.append('lati', pinData.lati.toString());
-    formData.append('long', pinData.long.toString());
-    formData.append('date', pinData.date);
+    formData.append('title', pinData.title);
+    formData.append('desc', pinData.description);
+    formData.append('lati', pinData.location.latitude.toString());
+    formData.append('long', pinData.location.longitude.toString());
+    formData.append('date', dateOnly);
+    formData.append('compassHeading', pinData.compassHeading);
+
+    console.log('Dados sendo enviados:', {
+      title: pinData.title,
+      desc: pinData.description,
+      lati: pinData.location.latitude,
+      long: pinData.location.longitude,
+      date: pinData.date,
+      compassHeading: pinData.compassHeading,
+      imageUri: pinData.imageUri ? 'presente' : 'ausente'
+    });
     
     // Cria uma nova instância do axios sem o Content-Type fixo
-    const response = await api.post('/pin/upload/', formData, {
+    const response = await api.post('/pin/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -68,16 +83,12 @@ export async function createPin(imageUri, pinData) {
 }
 
 // Função alternativa: apenas upload de imagem
-export async function uploadImage(file) {
+export async function uploadImage(id) {
   try {
     const formData = new FormData();
-    formData.append('file', {
-      uri: file.uri,
-      type: file.type || 'image/jpeg',
-      name: file.name || 'image.jpg',
-    });
+    formData.append('id', id);
 
-    const response = await api.post('/upload/', formData, {
+    const response = await api.post('/pin/delete', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

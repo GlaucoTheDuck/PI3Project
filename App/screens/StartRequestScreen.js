@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AppContext } from '../components/UserContext';
+import { createPin } from '../src/api/pin'
 
 export default function StartRequestScreen() {
   const [title, setTitle] = useState('');
@@ -34,31 +35,44 @@ export default function StartRequestScreen() {
     setCompassHeading(compassHeading);
   };
 
-  const handleSubmit = () => {
-    if (!title || !description || !imageUri) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos e tire uma foto');
-      return;
-    }
+const handleSubmit = async () => {
+  if (!title || !description || !imageUri) {
+    Alert.alert('Erro', 'Por favor, preencha todos os campos e tire uma foto');
+    return;
+  }
 
+  try {
     const newSolicitation = {
-      id: Date.now().toString(),
       title,
       description,
       date: new Date().toISOString(),
-      imageUri, 
-      location, 
-      compassHeading, 
+      imageUri,
+      location,
+      compassHeading,
     };
 
-    const updatedList = [...solicitations, newSolicitation];
+    // Aguardar resposta da API
+    const response = await createPin(newSolicitation);
+    console.log('Pin criado:', response);
+
+    // Só atualizar lista local se API foi bem-sucedida
+    const solicitationWithId = {
+      ...newSolicitation,
+      id: response.id || Date.now().toString(), // Usar ID do servidor
+    };
+
+    const updatedList = [...solicitations, solicitationWithId];
     setSolicitations(updatedList);
 
+    // Limpar formulário
     setTitle('');
     setDescription('');
-    setImageUri(null); 
-    setLocation(null); 
-    setCompassHeading(null); 
+    setImageUri(null);
+    setLocation(null);
+    setCompassHeading(null);
 
+    Alert.alert('Sucesso', 'Pin criado com sucesso!');
+    
     navigation.reset({
       index: 0,
       routes: [
@@ -66,7 +80,12 @@ export default function StartRequestScreen() {
         { name: 'ListSolicitation' },
       ],
     });
-  };
+
+  } catch (error) {
+    console.error('Erro ao criar pin:', error);
+    Alert.alert('Erro', 'Falha ao criar pin. Tente novamente.');
+  }
+};
 
   return (
     <SafeAreaView style={styles.safeArea}>
